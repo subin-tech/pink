@@ -1,6 +1,6 @@
 """Proposed interfaces for transcription and score transposition.
 
-The functions are documentation-only stubs and are not implemented yet.
+Only validate_notes is implemented; the other functions are documentation-only stubs.
 """
 
 from typing import TypedDict
@@ -12,6 +12,48 @@ class Note(TypedDict):
     pitch: int
     start: float
     end: float
+
+
+def validate_notes(notes: list[Note]) -> None:
+    """Validate MIDI pitches and note times in input order.
+
+    Args:
+        notes (list[Note]): Notes with MIDI pitches and times in seconds.
+
+    Returns:
+        None: All notes are valid, including when the list is empty.
+
+    Raises:
+        ValueError: If a pitch is outside 0 to 127, start is negative,
+            or end is not greater than start. The message identifies the
+            first invalid note by its zero-based index and the reason.
+
+    Examples:
+        >>> validate_notes([{'pitch': 60, 'start': 0.0, 'end': 0.5}])
+        >>> validate_notes([{'pitch': 200, 'start': 0.0, 'end': 0.5}])
+        Traceback (most recent call last):
+            ...
+        ValueError: notes[0]: pitch must be between 0 and 127 (got 200)
+
+    Note:
+        The input list and its note dictionaries are not modified.
+        Pitches 0 and 127 and a start time of 0 are valid.
+    """
+    for index, note in enumerate(notes):
+        if not 0 <= note['pitch'] <= 127:
+            raise ValueError(
+                f"notes[{index}]: pitch must be between 0 and 127 "
+                f"(got {note['pitch']})"
+            )
+        if note['start'] < 0:
+            raise ValueError(
+                f"notes[{index}]: start must be non-negative (got {note['start']})"
+            )
+        if note['end'] <= note['start']:
+            raise ValueError(
+                f"notes[{index}]: end must be greater than start "
+                f"(got end={note['end']}, start={note['start']})"
+            )
 
 
 def load_audio(path: str) -> tuple[list[float], int]:
