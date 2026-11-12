@@ -87,6 +87,36 @@ def transpose_notes(notes: list[Note], semitones: int) -> list[Note]:
     raise NotImplementedError
 
 
+def summarize_transposition(
+    original_notes: list[Note],
+    transposed_notes: list[Note],
+) -> list[tuple[int, int]]:
+    """Pair each original MIDI pitch with its transposed pitch.
+
+    Args:
+        original_notes (list[Note]): Notes in their original order.
+        transposed_notes (list[Note]): Corresponding notes in the same order.
+
+    Returns:
+        list[tuple[int, int]]: One (original pitch, transposed pitch) pair
+            per note, in input order. Two empty lists yield an empty list.
+
+    Raises:
+        ValueError: If the two lists have different lengths.
+
+    Examples:
+        >>> original = [{'pitch': 60, 'start': 0.0, 'end': 0.5}]
+        >>> changed = [{'pitch': 62, 'start': 0.0, 'end': 0.5}]
+        >>> summarize_transposition(original, changed)
+        [(60, 62)]
+
+    Note:
+        The example shows the planned behavior. This stub raises
+        NotImplementedError on every call.
+    """
+    raise NotImplementedError
+
+
 def create_score(notes: list[Note], tempo: int = 120) -> str:
     """Create a MusicXML score from notes at a fixed tempo.
 
