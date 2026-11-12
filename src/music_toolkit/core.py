@@ -15,7 +15,7 @@ class Note(TypedDict):
 
 
 def load_audio(path: str) -> tuple[list[float], int]:
-    """Load a mono WAV recording as normalized samples.
+    """Load a mono WAV recording and normalize audio samples to the range[-1,1].
 
     Args:
         path (str): Path to a mono WAV file of at most 30 seconds.
