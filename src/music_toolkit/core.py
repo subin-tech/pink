@@ -207,3 +207,30 @@ def save_score(score: str, path: str) -> str:
         This function is not implemented yet.
     """
     raise NotImplementedError
+
+
+def validate_semitones(semitones: int) -> None:
+    """Validate the semitone shift value for note transposition.
+
+    Args:
+        semitones (int): Number of semitones to shift.
+            Positive values raise the pitch, negative values lower it,
+            and zero leaves the pitch unchanged.
+
+    Returns:
+        None: If semitones is a valid integer.
+
+    Raises:
+        TypeError: If semitones is not an integer or is a boolean.
+
+    Examples:
+        >>> validate_semitones(2)
+        >>> validate_semitones(-3)
+        >>> validate_semitones(0)
+
+    Note:
+        This function checks only the type of the semitone shift.
+        Resulting MIDI pitch ranges are checked separately.
+        This function is not implemented yet.
+    """
+    raise NotImplementedError

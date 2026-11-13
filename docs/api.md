@@ -12,3 +12,4 @@
         - summarize_transposition
         - create_score
         - save_score
+        - validate_semitones
