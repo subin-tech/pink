@@ -10,3 +10,4 @@
         - transpose_notes
         - create_score
         - save_score
+        - validate_semitones
