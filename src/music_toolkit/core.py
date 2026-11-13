@@ -209,6 +209,34 @@ def save_score(score: str, path: str) -> str:
     raise NotImplementedError
 
 
+
+def validate_audio_input(duration: float, channels: int) -> bool:
+    """Check whether audio meets the project's input requirements.
+
+    Args:
+        duration (float): Audio duration in seconds.
+            Must be greater than 0 and at most 30.
+        channels (int): Number of audio channels.
+            Must be 1 (mono).
+
+    Returns:
+        bool: True if the audio meets the requirements,
+            False otherwise.
+
+    Raises:
+        NotImplementedError: The validation logic is not implemented yet.
+
+    Examples:
+        >>> validate_audio_input(20.0, 1)
+        True
+        >>> validate_audio_input(40.0, 1)
+        False
+        >>> validate_audio_input(20.0, 2)
+        False
+    """
+    raise NotImplementedError
+
+
 def validate_semitones(semitones: int) -> None:
     """Validate the semitone shift value for note transposition.
 
