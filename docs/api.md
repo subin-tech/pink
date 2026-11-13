@@ -8,5 +8,6 @@
         - load_audio
         - transcribe_notes
         - transpose_notes
+        - summarize_transposition
         - create_score
         - save_score
