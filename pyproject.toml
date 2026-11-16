@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "melodifyai"
+version = "0.1.0"
+description = "MIDI note validation and proposed audio transcription interfaces for MelodifyAI"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/subin-tech/pink"
+Documentation = "https://subin-tech.github.io/pink/"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/music_toolkit"]
