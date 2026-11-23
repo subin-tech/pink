@@ -1,6 +1,6 @@
 """Proposed interfaces for transcription and score transposition.
 
-Only validate_notes is implemented; the other functions are documentation-only stubs.
+validate_notes and summarize_transposition are implemented; other functions are stubs.
 """
 
 from typing import TypedDict
@@ -153,10 +153,16 @@ def summarize_transposition(
         [(60, 62)]
 
     Note:
-        The example shows the planned behavior. This stub raises
-        NotImplementedError on every call.
+        The input lists and their note dictionaries are not modified.
+        Notes are paired by position; this function does not transpose or
+        validate notes. Use validate_notes separately to check pitch and times.
     """
-    raise NotImplementedError
+    if len(original_notes) != len(transposed_notes):
+        raise ValueError("original_notes and transposed_notes must have the same length")
+    return [
+        (original['pitch'], transposed['pitch'])
+        for original, transposed in zip(original_notes, transposed_notes)
+    ]
 
 
 def create_score(notes: list[Note], tempo: int = 120) -> str:

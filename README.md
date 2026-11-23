@@ -6,7 +6,7 @@
 
 ## 1. What it does
 
-MelodifyAI는 악기를 배우는 학생과 취미 연주자가 짧은 연주를 채보하고 원하는 음높이로 바꾸는 작업을 돕는 것을 목표로 합니다. 현재는 음표 정보 검증만 구현되어 있으며, 아래 음원 처리와 악보 생성 기능은 개발 계획입니다.
+MelodifyAI는 악기를 배우는 학생과 취미 연주자가 짧은 연주를 채보하고 원하는 음높이로 바꾸는 작업을 돕는 것을 목표로 합니다. 현재는 음표 정보 검증과 변환 전후 음높이 비교가 구현되어 있으며, 아래 음원 처리와 악보 생성 기능은 개발 계획입니다.
 
 ### 핵심 기능과 처리 순서
 
@@ -46,6 +46,23 @@ cd pink
 PYTHONPATH=src python3 -c "from music_toolkit.core import validate_notes; validate_notes([{'pitch': 60, 'start': 0.0, 'end': 0.5}]); print('유효한 음표입니다')"
 ```
 
+`summarize_transposition()`은 같은 순서로 전달한 음표의 변환 전후 음높이를 반환합니다.
+개발 중인 저장소를 `python -m pip install -e .`로 설치한 뒤 실행할 수 있습니다.
+기존 TestPyPI 0.1.0 배포본에는 이 함수의 구현이 포함되어 있지 않습니다.
+
+```python
+from music_toolkit import summarize_transposition
+
+original = [{'pitch': 60, 'start': 0.0, 'end': 0.5}]
+changed = [{'pitch': 62, 'start': 0.0, 'end': 0.5}]
+assert summarize_transposition(original, changed) == [(60, 62)]
+```
+
+두 목록이 비어 있으면 `[]`를 반환하고, 길이가 다르면 `ValueError`를 발생시킵니다.
+이 함수는 음높이를 직접 변경하지 않으며 입력을 보존합니다.
+테스트는 `python -m pip install -e . pytest` 후
+`python -m pytest tests/test_summarize_transposition.py`로 실행합니다.
+
 음원 입력부터 악보 생성까지의 예제는 해당 기능 구현 후 추가합니다.
 
 ## 4. Dependencies
@@ -54,7 +71,17 @@ PYTHONPATH=src python3 -c "from music_toolkit.core import validate_notes; valida
 
 ## 5. Tests
 
-TODO: 자동 테스트를 작성하고 실행 방법을 추가합니다. 아래는 구현 계획이며 아직 완료된 검증이 아닙니다.
+가상환경을 활성화한 뒤 저장소 루트에서 아래 명령을 실행합니다.
+
+```bash
+python -m pip install -e . pytest
+python -m pytest
+```
+
+현재 `summarize_transposition()`의 정상 결과, 빈 목록, 길이 불일치, 입력 보존을 검증합니다.
+`validate_notes()` 자동 테스트는 PR #22에서 추가합니다.
+
+아래는 앞으로 추가할 테스트입니다.
 
 - [ ] 음원 입력: 정상 모노 WAV, 30초 경계, 초과 길이, 스테레오, 잘못된 형식과 누락된 파일을 확인합니다.
 - [ ] 채보: 사용 허가가 있는 단음·화음 샘플에서 추정 음높이와 시작·종료 시간을 기대 결과와 비교합니다. 오류와 한계를 기록합니다.
