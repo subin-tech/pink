@@ -1,6 +1,6 @@
 """Proposed interfaces for transcription and score transposition.
 
-Only validate_notes is implemented; the other functions are documentation-only stubs.
+Note and semitone validation are implemented.
 """
 
 from typing import TypedDict
@@ -259,6 +259,6 @@ def validate_semitones(semitones: int) -> None:
     Note:
         This function checks only the type of the semitone shift.
         Resulting MIDI pitch ranges are checked separately.
-        This function is not implemented yet.
     """
-    raise NotImplementedError
+    if isinstance(semitones, bool) or not isinstance(semitones, int):
+        raise TypeError("semitones must be an integer")

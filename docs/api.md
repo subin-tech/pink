@@ -1,6 +1,6 @@
 # API
 
-`validate_notes`는 구현되어 음표 목록을 검증합니다. 나머지 함수들은 아직 구현되지 않았으며 호출하면 `NotImplementedError`가 발생합니다.
+`validate_notes()`는 음표 목록을, `validate_semitones()`는 반음 이동 값을 검증합니다. 나머지 함수는 호출하면 `NotImplementedError`가 발생합니다.
 
 ::: music_toolkit.core
     options:
