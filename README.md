@@ -6,7 +6,7 @@
 
 ## 1. What it does
 
-MelodifyAI는 악기를 배우는 학생과 취미 연주자가 짧은 연주를 채보하고 원하는 음높이로 바꾸는 작업을 돕는 것을 목표로 합니다. 현재는 음표 정보 검증만 구현되어 있으며, 아래 음원 처리와 악보 생성 기능은 개발 계획입니다.
+MelodifyAI는 악기를 배우는 학생과 취미 연주자가 짧은 연주를 채보하고 원하는 음높이로 바꾸는 작업을 돕는 것을 목표로 합니다. 현재 음표 정보 검증과 음표 목록을 이용한 MusicXML 악보 생성을 지원합니다.
 
 ### 핵심 기능과 처리 순서
 
@@ -50,7 +50,7 @@ PYTHONPATH=src python3 -c "from music_toolkit.core import validate_notes; valida
 
 ## 4. Dependencies
 
-현재 구현된 `validate_notes()`는 Python 표준 라이브러리만 사용합니다. 음원 분석과 MusicXML 생성에 사용할 외부 라이브러리는 선정 후 이름과 라이선스를 기록합니다.
+`validate_notes()`와 `create_score()`는 Python 표준 라이브러리만 사용합니다. 음원 분석에 사용할 외부 라이브러리는 선정 후 이름과 라이선스를 기록합니다.
 
 ## 5. Tests
 

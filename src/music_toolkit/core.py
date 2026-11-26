@@ -1,9 +1,11 @@
 """Proposed interfaces for transcription and score transposition.
 
-Only validate_notes is implemented; the other functions are documentation-only stubs.
+Note validation and MusicXML score generation are implemented.
 """
 
+from math import floor, isfinite
 from typing import TypedDict
+from xml.etree import ElementTree as ET
 
 
 class Note(TypedDict):
@@ -178,10 +180,65 @@ def create_score(notes: list[Note], tempo: int = 120) -> str:
         True
 
     Note:
-        The first version uses a fixed tempo and may require manual rhythm correction.
-        This function is not implemented yet.
+        Times are rounded to the nearest eighth note, with ties rounded up.
+        Each note lasts at least one eighth. The score uses one unmetered
+        measure because the input has no time signature.
     """
-    raise NotImplementedError
+    if tempo <= 0 or not isfinite(tempo):
+        raise ValueError("tempo must be positive and finite")
+    validate_notes(notes)
+
+    # Group notes with the same quantized interval into chords.
+    chords: dict[tuple[int, int], list[int]] = {}
+    for index, note in enumerate(notes):
+        if not isfinite(note["start"]) or not isfinite(note["end"]):
+            raise ValueError(f"notes[{index}]: note times must be finite")
+        start = floor(note["start"] * tempo / 30 + 0.5)
+        end = max(start + 1, floor(note["end"] * tempo / 30 + 0.5))
+        chords.setdefault((start, end), []).append(note["pitch"])
+
+    score = ET.Element("score-partwise", version="4.0")
+    part_list = ET.SubElement(score, "part-list")
+    score_part = ET.SubElement(part_list, "score-part", id="P1")
+    ET.SubElement(score_part, "part-name").text = "Music"
+    part = ET.SubElement(score, "part", id="P1")
+    measure = ET.SubElement(part, "measure", number="1")
+    attributes = ET.SubElement(measure, "attributes")
+    ET.SubElement(attributes, "divisions").text = "2"
+    ET.SubElement(ET.SubElement(attributes, "time"), "senza-misura")
+    ET.SubElement(measure, "sound", tempo=str(tempo))
+
+    pitch_names = ("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+    cursor = 0
+    voice_ends: list[int] = []
+    for (start, end), pitches in sorted(chords.items()):
+        # Overlapping intervals with different lengths need independent voices.
+        voice = next((i for i, stop in enumerate(voice_ends) if stop <= start),
+                     len(voice_ends))
+        if voice == len(voice_ends):
+            voice_ends.append(end)
+        else:
+            voice_ends[voice] = end
+        if start != cursor:
+            move = ET.SubElement(measure, "forward" if start > cursor else "backup")
+            ET.SubElement(move, "duration").text = str(abs(start - cursor))
+        for i, midi in enumerate(pitches):
+            element = ET.SubElement(measure, "note")
+            if i:
+                ET.SubElement(element, "chord")
+            pitch = ET.SubElement(element, "pitch")
+            name = pitch_names[midi % 12]
+            octave = midi // 12 - 1
+            ET.SubElement(pitch, "step").text = name[0]
+            # MusicXML octaves start at 0; encode MIDI octave -1 via alteration.
+            alter = int(name.endswith("#")) + 12 * min(octave, 0)
+            if alter:
+                ET.SubElement(pitch, "alter").text = str(alter)
+            ET.SubElement(pitch, "octave").text = str(max(0, octave))
+            ET.SubElement(element, "duration").text = str(end - start)
+            ET.SubElement(element, "voice").text = str(voice + 1)
+        cursor = end
+    return ET.tostring(score, encoding="unicode")
 
 
 def save_score(score: str, path: str) -> str:
