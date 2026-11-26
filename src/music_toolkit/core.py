@@ -1,6 +1,7 @@
-"""Proposed interfaces for transcription and score transposition.
+"""Core interfaces for audio processing, transcription, and score operations.
 
-Only validate_notes is implemented; the other functions are documentation-only stubs.
+validate_notes, load_audio, and validate_audio_input are implemented.
+Other functions are currently documentation-only stubs.
 """
 
 import wave
@@ -77,7 +78,6 @@ def load_audio(path: str) -> tuple[list[float], int]:
 
     Note:
         The example assumes a suitable file with a 44100 Hz sample rate.
-        This function is not implemented yet.
     """
     
     try:
