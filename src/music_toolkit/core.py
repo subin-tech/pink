@@ -1,8 +1,10 @@
-"""Proposed interfaces for transcription and score transposition.
+"""Core interfaces for audio processing, transcription, and score operations.
 
-Only validate_notes is implemented; the other functions are documentation-only stubs.
+validate_notes, load_audio, and validate_audio_input are implemented.
+Other functions are currently documentation-only stubs.
 """
 
+import wave
 from typing import TypedDict
 
 
@@ -76,9 +78,44 @@ def load_audio(path: str) -> tuple[list[float], int]:
 
     Note:
         The example assumes a suitable file with a 44100 Hz sample rate.
-        This function is not implemented yet.
     """
-    raise NotImplementedError
+    
+    try:
+        with wave.open(path, "rb") as audio:
+            channels = audio.getnchannels()
+            sample_rate = audio.getframerate()
+            frames = audio.getnframes()
+            sample_width = audio.getsampwidth()
+
+            if channels != 1:
+                raise ValueError("Audio must be mono")
+
+            if sample_rate <= 0 or frames / sample_rate > 30:
+                raise ValueError("Audio must be at most 30 seconds")
+
+            if sample_width not in (1, 2, 3, 4):
+                raise ValueError("Unsupported sample width")
+
+            raw = audio.readframes(frames)
+
+    except (wave.Error, EOFError) as exc:
+        raise ValueError("Unsupported WAV file") from exc
+
+    if sample_width == 1:
+        samples = [(x - 128) / 128 for x in raw]
+    else:
+        scale = 1 << (8 * sample_width - 1)
+        samples = [
+            int.from_bytes(
+                raw[i:i + sample_width],
+                byteorder="little",
+                signed=True
+            ) / scale
+            for i in range(0, len(raw), sample_width)
+        ]
+
+    return samples, sample_rate
+
 
 
 def transcribe_notes(samples: list[float], sample_rate: int) -> list[Note]:
@@ -223,8 +260,6 @@ def validate_audio_input(duration: float, channels: int) -> bool:
         bool: True if the audio meets the requirements,
             False otherwise.
 
-    Raises:
-        NotImplementedError: The validation logic is not implemented yet.
 
     Examples:
         >>> validate_audio_input(20.0, 1)
@@ -234,7 +269,7 @@ def validate_audio_input(duration: float, channels: int) -> bool:
         >>> validate_audio_input(20.0, 2)
         False
     """
-    raise NotImplementedError
+    return 0 < duration <= 30 and channels == 1
 
 
 def validate_semitones(semitones: int) -> None:
